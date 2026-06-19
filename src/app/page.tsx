@@ -203,12 +203,12 @@ export default function Homepage() {
             Find your next<br />
             <span className="text-[#ff3131]">great read.</span>
           </h1>
-          <p className="text-gray-400 text-base md:text-xl mb-10 max-w-xl mx-auto leading-relaxed">
+          <p className="text-gray-400 text-base md:text-xl mb-10 md:mb-6 max-w-xl mx-auto leading-relaxed">
             Thousands of books across every genre — delivered to your door.
           </p>
 
-          {/* Hero search bar */}
-          <form onSubmit={handleHeroSearch} className="flex items-center bg-white/10 border border-white/20 focus-within:border-[#ff3131] focus-within:bg-white/15 transition-all duration-300 max-w-2xl mx-auto backdrop-blur-sm rounded-xl overflow-hidden">
+          {/* Hero search bar — mobile only (desktop has header search) */}
+          <form onSubmit={handleHeroSearch} className="md:hidden flex items-center bg-white/10 border border-white/20 focus-within:border-[#ff3131] focus-within:bg-white/15 transition-all duration-300 max-w-2xl mx-auto backdrop-blur-sm rounded-xl overflow-hidden">
             <FiSearch className="ml-5 text-gray-400 w-5 h-5 flex-shrink-0" />
             <input
               type="text"
