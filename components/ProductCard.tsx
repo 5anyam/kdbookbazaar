@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { productToSlug } from "../lib/slug";
-import { ShoppingCart } from 'lucide-react';
 
 interface Product {
   id: number | string;
@@ -28,55 +27,37 @@ export default function ProductCard({ product }: { product: Product }) {
 
   return (
     <Link href={productUrl} className="group block">
-      {/* Book Cover — portrait 2:3 ratio */}
-      <div className="relative aspect-[2/3] overflow-hidden bg-white mb-3 shadow-sm group-hover:shadow-lg transition-shadow duration-300 border border-gray-100">
+      {/* Book Cover */}
+      <div className="relative w-full bg-[#f7f6f3] rounded-2xl overflow-hidden mb-3 shadow-sm group-hover:shadow-md transition-shadow duration-300"
+        style={{ paddingBottom: "133%" }}>
         <img
           src={product.images?.[0]?.src || "/placeholder.png"}
           alt={product.name}
-          className="w-full h-full object-contain group-hover:scale-[1.04] transition-transform duration-500 ease-out"
+          className="absolute inset-0 w-full h-full object-contain p-2 group-hover:scale-[1.03] transition-transform duration-500 ease-out"
         />
-
-        {/* Quick shop overlay on hover */}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-end justify-center pb-4 opacity-0 group-hover:opacity-100">
-          <span className="flex items-center gap-1.5 bg-white text-gray-900 text-[10px] font-bold uppercase tracking-[0.15em] px-4 py-2 shadow-md">
-            <ShoppingCart className="w-3 h-3" /> Quick View
-          </span>
-        </div>
-
-        {/* Badges */}
         {isOnSale && (
-          <div className="absolute top-2 left-2 bg-[#ff3131] text-white text-[9px] font-bold px-2 py-0.5 tracking-[0.15em] uppercase">
-            {discountPercent}% OFF
+          <div className="absolute top-2 left-2 bg-[#ff3131] text-white text-[9px] font-bold px-2.5 py-1 rounded-full tracking-wide">
+            -{discountPercent}%
           </div>
         )}
         {!isOnSale && product.badge === 'New' && (
-          <div className="absolute top-2 left-2 bg-gray-900 text-white text-[9px] font-bold px-2 py-0.5 tracking-[0.15em] uppercase">
+          <div className="absolute top-2 left-2 bg-gray-800 text-white text-[9px] font-bold px-2.5 py-1 rounded-full tracking-wide">
             New
-          </div>
-        )}
-        {!isOnSale && product.badge === 'Hot' && (
-          <div className="absolute top-2 left-2 bg-[#ff3131] text-white text-[9px] font-bold px-2 py-0.5 tracking-[0.15em] uppercase">
-            Hot
           </div>
         )}
       </div>
 
-      {/* Book info */}
-      <div className="space-y-1">
-        {product.category && (
-          <p className="text-[10px] text-[#ff3131] uppercase tracking-[0.15em] font-semibold truncate">
-            {product.category}
-          </p>
-        )}
-        <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 leading-snug group-hover:text-[#ff3131] transition-colors duration-200">
+      {/* Info */}
+      <div className="px-0.5">
+        <h3 className="text-xs font-semibold text-gray-800 line-clamp-2 leading-snug group-hover:text-[#ff3131] transition-colors duration-200 mb-1.5">
           {product.name}
         </h3>
-        <div className="flex items-baseline gap-2 pt-0.5">
+        <div className="flex items-center gap-2">
           <span className="text-sm font-bold text-gray-900">
             ₹{salePrice.toLocaleString('en-IN')}
           </span>
           {isOnSale && (
-            <span className="text-xs text-gray-400 line-through font-normal">
+            <span className="text-xs text-gray-400 line-through">
               ₹{originalPrice.toLocaleString('en-IN')}
             </span>
           )}
