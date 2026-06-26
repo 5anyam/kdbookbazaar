@@ -68,11 +68,48 @@ const CATEGORY_ICONS: Record<string, string> = {
   academic: '🎓', 'academic-books': '🎓', textbooks: '🎓', 'self-help': '💡',
   biography: '👤', biographies: '👤', history: '🏛️', 'science-technology': '🔬',
   science: '🔬', technology: '💻', comics: '🎨', 'comics-manga': '🎨',
-  religion: '🙏', religious: '🙏', business: '💼', travel: '✈️',
+  manga: '🖼️', religion: '🙏', religious: '🙏', business: '💼', travel: '✈️',
   cooking: '🍳', poetry: '✍️', romance: '❤️', thriller: '🔍',
   mystery: '🔍', horror: '👻', fantasy: '🐉', 'health-wellness': '🌿',
-  health: '🌿', art: '🎨', default: '📕',
+  health: '🌿', art: '🎨', combo: '🎁', 'box-set': '📦', 'box set': '📦',
+  boxset: '📦', default: '📕',
 };
+
+const FEATURED_CATEGORIES = [
+  {
+    name: 'Manga Comics',
+    slug: 'manga-comics',
+    emoji: '🖼️',
+    description: 'Manga, graphic novels & comics',
+    bg: 'bg-purple-50',
+    border: 'border-purple-200',
+    hoverBorder: 'hover:border-purple-400',
+    textColor: 'text-purple-700',
+    badgeBg: 'bg-purple-100',
+  },
+  {
+    name: 'Combo Books',
+    slug: 'combo-books',
+    emoji: '🎁',
+    description: 'Best value book bundles',
+    bg: 'bg-amber-50',
+    border: 'border-amber-200',
+    hoverBorder: 'hover:border-amber-400',
+    textColor: 'text-amber-700',
+    badgeBg: 'bg-amber-100',
+  },
+  {
+    name: 'Box Set',
+    slug: 'box-set',
+    emoji: '📦',
+    description: 'Complete series & collections',
+    bg: 'bg-teal-50',
+    border: 'border-teal-200',
+    hoverBorder: 'hover:border-teal-400',
+    textColor: 'text-teal-700',
+    badgeBg: 'bg-teal-100',
+  },
+];
 
 function getCategoryIcon(slug: string): string {
   const lower = slug.toLowerCase();
@@ -310,6 +347,37 @@ export default function Homepage() {
                 </div>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── FEATURED CATEGORIES ──────────────────────────────────────── */}
+      <section className="py-8 px-4 bg-white border-b border-gray-100">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="text-lg font-bold text-gray-900">Shop by Category</h2>
+            <Link href="/collections" className="text-xs font-semibold text-[#ff3131] hover:underline flex items-center gap-1">
+              View all <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-3 gap-3 md:gap-5">
+            {FEATURED_CATEGORIES.map((cat) => (
+              <Link
+                key={cat.slug}
+                href={`/category/${cat.slug}`}
+                className={`group flex flex-col items-center justify-center text-center p-4 md:p-7 rounded-2xl border-2 ${cat.bg} ${cat.border} ${cat.hoverBorder} transition-all duration-200 hover:shadow-md`}
+              >
+                <div className={`w-12 h-12 md:w-16 md:h-16 ${cat.badgeBg} rounded-2xl flex items-center justify-center text-2xl md:text-3xl mb-3 group-hover:scale-110 transition-transform duration-200`}>
+                  {cat.emoji}
+                </div>
+                <h3 className={`text-xs md:text-sm font-bold ${cat.textColor} leading-tight mb-1`}>
+                  {cat.name}
+                </h3>
+                <p className="text-[10px] md:text-xs text-gray-500 hidden md:block leading-snug">
+                  {cat.description}
+                </p>
+              </Link>
+            ))}
           </div>
         </div>
       </section>

@@ -81,11 +81,11 @@ export default function Loader() {
   return (
     <div className="fixed top-0 left-0 right-0 z-[9999] h-[3px]" style={{ pointerEvents: 'none' }}>
       <div
-        className="h-full bg-[#ff3131] transition-all ease-out"
+        className="h-full bg-blue-500 transition-all ease-out"
         style={{
           width: `${progress}%`,
           transitionDuration: progress === 100 ? '300ms' : '120ms',
-          boxShadow: '0 0 8px rgba(255, 107, 0, 0.6)',
+          boxShadow: '0 0 8px rgba(59, 130, 246, 0.7)',
         }}
       />
     </div>
