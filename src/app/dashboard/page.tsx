@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../../../lib/AuthContext";
 import {
   Package, Clock, CheckCircle, XCircle, Truck, LogOut,
-  User, Mail, Phone, RefreshCw, AlertCircle, ShoppingBag,
+  User, Mail, RefreshCw, AlertCircle, ShoppingBag,
   ChevronDown, ChevronUp, X, RotateCcw
 } from "lucide-react";
 import Link from "next/link";
@@ -195,7 +195,7 @@ export default function Dashboard() {
   if (!user) return null;
 
   const displayName = user.first_name || user.username;
-  const displayEmail = user.email && !user.email.endsWith('@phone.kdbookbazaar.com') ? user.email : null;
+  const displayEmail = user.email || null;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -251,18 +251,6 @@ export default function Dashboard() {
                 <div className="min-w-0">
                   <p className="text-[11px] text-gray-400 uppercase tracking-wide">Email</p>
                   <p className="text-sm font-semibold text-gray-800 truncate">{displayEmail}</p>
-                </div>
-              </div>
-            )}
-
-            {user.phone && (
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#ff3131]/10 rounded-full flex items-center justify-center shrink-0">
-                  <Phone className="w-5 h-5 text-[#ff3131]" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[11px] text-gray-400 uppercase tracking-wide">Phone</p>
-                  <p className="text-sm font-semibold text-gray-800">+91 {user.phone}</p>
                 </div>
               </div>
             )}

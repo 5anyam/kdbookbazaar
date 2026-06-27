@@ -3,13 +3,16 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 
+const WC_BASE = 'https://cms.kdbookbazaar.com/wp-json/wc/v3';
+const CK = process.env.NEXT_PUBLIC_CONSUMER_KEY || 'ck_b2cff698fa447d779aa56d980ea00fea049721a7';
+const CS = process.env.NEXT_PUBLIC_CONSUMER_SECRET || 'cs_1f8a7857e2e4030a0a8222979673ef040c763848';
+
 interface User {
   id: number;
   email: string;
   username: string;
   first_name: string;
   last_name: string;
-  phone?: string;
 }
 
 interface RegisterData {
@@ -24,7 +27,6 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (username: string, password: string) => Promise<void>;
-  loginWithPhone: (userData: User) => void;
   register: (data: RegisterData) => Promise<void>;
   logout: () => void;
 }
@@ -73,30 +75,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     Cookies.set('caishen_token', result.data.token, { expires: 7 });
   };
 
-  const loginWithPhone = (userData: User) => {
-    setUser(userData);
-    Cookies.set('kdbookbazaar_user', JSON.stringify(userData), { expires: 7 });
-  };
-
   const register = async (data: RegisterData) => {
-    const res = await fetch('/api/auth/register', {
+    // Call WooCommerce REST API directly — creates a real WordPress user
+    const auth = btoa(`${CK}:${CS}`);
+    const res = await fetch(`${WC_BASE}/customers`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${auth}`,
+      },
+      body: JSON.stringify({
+        username: data.username,
+        email: data.email,
+        password: data.password,
+        first_name: data.first_name || '',
+        last_name: data.last_name || '',
+      }),
     });
 
     const result = await res.json();
 
     if (!res.ok) {
-      throw new Error(result.error || 'Registration failed.');
+      const code: string = result.code || '';
+      if (code.includes('email-exists')) throw new Error('An account with this email already exists. Please login instead.');
+      if (code.includes('username-exists')) throw new Error('This username is already taken. Please choose another.');
+      throw new Error(result.message || 'Registration failed. Please try again.');
     }
 
-    const userData: User = result.user;
-    setUser(userData);
-    Cookies.set('kdbookbazaar_user', JSON.stringify(userData), { expires: 7 });
-    if (result.token) {
-      Cookies.set('caishen_token', result.token, { expires: 7 });
-    }
+    // Auto-login after successful registration
+    await login(data.username, data.password);
   };
 
   const logout = () => {
@@ -106,7 +113,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, loginWithPhone, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
