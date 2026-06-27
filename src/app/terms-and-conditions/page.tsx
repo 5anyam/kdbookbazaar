@@ -2,7 +2,7 @@
 
 import {
   Scale, Truck, Lock, Gavel, RefreshCw,
-  ChevronRight, Mail, Bell, MapPin, Shield, LucideIcon
+  ChevronRight, Mail, Bell, MapPin, Shield, Phone, LucideIcon
 } from 'lucide-react';
 import Link from 'next/link';
 
