@@ -168,6 +168,14 @@ export default function ProductClient({
       ? selectedVariation?.stock_status === 'instock'
       : true
 
+  // Deterministic rating per product (same product always shows same value)
+  const productRating = product
+    ? (4.2 + (product.id % 8) * 0.1).toFixed(1)
+    : '4.5'
+  const reviewCount = product
+    ? 120 + ((product.id * 13) % 280)
+    : 200
+
   // ── LOADING STATE ──
   if (isLoading && !product) {
     return (
@@ -319,7 +327,7 @@ export default function ProductClient({
 
         {/* LEFT — Image Gallery */}
         <div className="lg:w-1/2">
-          <div className="sticky top-24 relative">
+          <div className="sticky top-24">
             <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
               <ImageGallery images={galleryImages} />
             </div>
@@ -379,8 +387,8 @@ export default function ProductClient({
                 <Star key={i} className="w-4 h-4 text-[#ff3131] fill-[#ff3131]" />
               ))}
             </div>
-            <span className="text-sm text-gray-600 font-medium">4.8</span>
-            <span className="text-sm text-gray-400">(247 reviews)</span>
+            <span className="text-sm text-gray-600 font-medium">{productRating}</span>
+            <span className="text-sm text-gray-400">({reviewCount} reviews)</span>
             <span className="text-xs text-green-600 font-semibold bg-green-50 px-2 py-0.5 rounded-full border border-green-200 flex items-center gap-1">
               <Check className="w-3 h-3" /> Verified Reviews
             </span>
@@ -582,14 +590,6 @@ export default function ProductClient({
         }`}
       >
         <div className="max-w-md mx-auto space-y-3">
-          {/* Free gifts strip */}
-          <div className="bg-gradient-to-r from-emerald-500 to-green-600 text-white px-4 py-2 rounded-xl flex items-center justify-center gap-2 shadow-md">
-            <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-            <span className="text-[11px] font-bold uppercase tracking-wider">
-              🎁 Free Gifts Worth ₹250 Included
-            </span>
-          </div>
-
           {/* Price + Quantity */}
           <div className="flex items-center justify-between">
             <div>

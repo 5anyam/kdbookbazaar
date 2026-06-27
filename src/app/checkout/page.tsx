@@ -11,7 +11,7 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   ShoppingBag, User, CheckCircle, AlertCircle,
-  Tag, X, ArrowRight, Gift, Lock
+  Tag, X, ArrowRight, Lock
 } from "lucide-react";
 
 // ── CONFIG ──────────────────────────────────────────────────────────────────
@@ -495,41 +495,6 @@ export default function Checkout(): React.ReactElement {
             </div>
           </div>
         </SectionCard>
-
-        {/* ── FREE GIFTS ── */}
-        <div className="bg-emerald-50 border-2 border-dashed border-emerald-300 rounded-2xl p-5">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-9 h-9 bg-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0">
-              <Gift className="w-4 h-4 text-white" />
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-emerald-700 uppercase tracking-wide">Free Premium Gifts</h3>
-              <p className="text-xs text-gray-500">Worth ₹250 — Automatically Included</p>
-            </div>
-            <span className="ml-auto text-[10px] font-bold bg-emerald-600 text-white px-2.5 py-1 rounded-full uppercase tracking-wide">Limited Time</span>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            {[
-              { src: "/sticky.webp", name: "Premium Sticky Pad", desc: "High-Quality & Reusable", worth: "₹125" },
-              { src: "/wire.webp", name: "Cable Protector", desc: "Durable & Long-lasting", worth: "₹125" },
-            ].map((gift, i) => (
-              <div key={i} className="flex items-center gap-3 bg-white rounded-xl p-3 border border-emerald-200 shadow-sm">
-                <div className="w-11 h-11 rounded-lg overflow-hidden border border-emerald-100 relative flex-shrink-0">
-                  <Image src={gift.src} alt={gift.name} fill className="object-contain p-1" sizes="44px" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-gray-900">{gift.name}</p>
-                  <p className="text-[10px] text-gray-400">{gift.desc}</p>
-                  <p className="text-[10px] text-emerald-600 font-bold mt-0.5">{gift.worth}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="flex items-center justify-center gap-2 mt-4 pt-3 border-t border-emerald-200">
-            <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
-            <p className="text-xs text-emerald-700 font-medium">Gifts will be packed with your order at no extra cost</p>
-          </div>
-        </div>
 
         {/* ── COUPON ── */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
