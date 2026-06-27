@@ -22,7 +22,7 @@ const WOOCOMMERCE_CONFIG = {
 };
 
 const RAZORPAY_CONFIG = {
-  KEY_ID: "rzp_live_RkoPyn44Fu0nOg",
+  KEY_ID: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_T6YBXprJ5J3n9D",
   COMPANY_NAME: "KD Book Bazaar",
   THEME_COLOR: "#ff3131",
 };
@@ -686,17 +686,19 @@ export default function Checkout(): React.ReactElement {
               disabled={loading || step === "processing"}
               className="w-full bg-[#ff3131] hover:bg-[#cc0000] disabled:opacity-60 disabled:cursor-not-allowed text-white py-4 rounded-xl text-sm font-bold uppercase tracking-wide transition-all shadow-md hover:shadow-lg hover:shadow-orange-200 flex items-center justify-center gap-2"
             >
-              ) : paymentMethod === cod ? (
-  <>
-    Place COD Order — ₹{finalTotal.toLocaleString("en-IN")}
-    <ArrowRight className="w-4 h-4" />
-  </>
-) : (
-  <>
-    Pay ₹{finalTotal.toLocaleString("en-IN")} Securely
-    <ArrowRight className="w-4 h-4" />
-  </>
-)
+              {loading || step === "processing" ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : paymentMethod === "cod" ? (
+                <>
+                  Place COD Order — ₹{finalTotal.toLocaleString("en-IN")}
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              ) : (
+                <>
+                  Pay ₹{finalTotal.toLocaleString("en-IN")} Securely
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
             </button>
 
             <div className="flex items-center justify-center gap-5 text-xs text-gray-400 pt-1">
