@@ -157,7 +157,11 @@ export default function Homepage() {
   const categories: Category[] = Array.isArray(categoriesRaw)
     ? categoriesRaw
         .filter((c) => c.slug !== 'uncategorized' && c.name.toLowerCase() !== 'uncategorized')
-        .sort((a, b) => b.count - a.count)
+        .sort((a, b) => {
+          if (a.slug === 'manga-comics') return -1;
+          if (b.slug === 'manga-comics') return 1;
+          return b.count - a.count;
+        })
     : [];
 
   const showcaseCategories = categories
