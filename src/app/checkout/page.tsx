@@ -32,7 +32,6 @@ interface CheckoutFormData {
   name: string;
   email: string;
   phone: string;
-  whatsapp: string;
   address: string;
   pincode: string;
   city: string;
@@ -193,7 +192,7 @@ export default function Checkout(): React.ReactElement {
   const [errors, setErrors] = useState<Partial<CheckoutFormData>>({});
 
   const [form, setForm] = useState<CheckoutFormData>({
-    name: "", email: "", phone: "", whatsapp: "",
+    name: "", email: "", phone: "",
     address: "", pincode: "", city: "", state: "", notes: "",
   });
 
@@ -201,16 +200,37 @@ export default function Checkout(): React.ReactElement {
   const codCharges = paymentMethod === "cod" ? 100 : 0;
   const finalTotal = subtotal - couponDiscount + codCharges;
 
+  // Autofill from user profile + saved WC billing address
   useEffect(() => {
-    if (user) {
-      setForm((prev) => ({
-        ...prev,
-        name: user.first_name && user.last_name
-          ? `${user.first_name} ${user.last_name}`.trim()
-          : user.first_name || user.username,
-        email: user.email || "",
-      }));
-    }
+    if (!user) return;
+    setForm((prev) => ({
+      ...prev,
+      name: user.first_name
+        ? `${user.first_name} ${user.last_name || ""}`.trim()
+        : user.username,
+      email: user.email || "",
+    }));
+    // Fetch saved billing address from WooCommerce
+    const auth = btoa(
+      `${process.env.NEXT_PUBLIC_CONSUMER_KEY || "ck_b2cff698fa447d779aa56d980ea00fea049721a7"}:${process.env.NEXT_PUBLIC_CONSUMER_SECRET || "cs_1f8a7857e2e4030a0a8222979673ef040c763848"}`
+    );
+    fetch(`https://cms.kdbookbazaar.com/wp-json/wc/v3/customers/${user.id}`, {
+      headers: { Authorization: `Basic ${auth}` },
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        const b = data.billing || {};
+        setForm((prev) => ({
+          ...prev,
+          name: prev.name || `${b.first_name || ""} ${b.last_name || ""}`.trim() || prev.name,
+          phone: prev.phone || b.phone || "",
+          address: prev.address || b.address_1 || "",
+          city: prev.city || b.city || "",
+          state: prev.state || b.state || "",
+          pincode: prev.pincode || b.postcode || "",
+        }));
+      })
+      .catch(() => {/* ignore */});
   }, [user]);
 
   useEffect(() => {
@@ -259,12 +279,6 @@ export default function Checkout(): React.ReactElement {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
-  const copyPhoneToWhatsApp = () => {
-    if (form.phone) {
-      setForm((f) => ({ ...f, whatsapp: form.phone }));
-      setErrors((prev) => ({ ...prev, whatsapp: undefined }));
-    }
-  };
 
   const validateForm = (): boolean => {
     const e: Partial<CheckoutFormData> = {};
@@ -273,8 +287,6 @@ export default function Checkout(): React.ReactElement {
     else if (!/^[\w.-]+@[\w.-]+\.\w{2,}$/.test(form.email)) e.email = "Enter a valid email";
     if (!form.phone.trim()) e.phone = "Phone is required";
     else if (!/^\d{10}$/.test(form.phone)) e.phone = "Enter a valid 10-digit number";
-    if (!form.whatsapp.trim()) e.whatsapp = "WhatsApp number is required";
-    else if (!/^\d{10}$/.test(form.whatsapp)) e.whatsapp = "Enter a valid 10-digit number";
     if (!form.address.trim()) e.address = "Address is required";
     if (!form.pincode.trim()) e.pincode = "Pincode is required";
     else if (!/^\d{6}$/.test(form.pincode)) e.pincode = "Enter a valid 6-digit pincode";
@@ -307,9 +319,8 @@ export default function Checkout(): React.ReactElement {
       shipping_lines: method === "cod" && codCharges > 0 ? [{ method_id: "cod", method_title: "COD Handling Charges", total: codCharges.toString() }] : [],
       fee_lines: feeLines,
       coupon_lines: [],
-      customer_note: [form.notes, `WhatsApp: ${form.whatsapp}`, `Full Address: ${fullAddress}`, appliedCoupon ? `Coupon: ${appliedCoupon} (₹${couponDiscount} off)` : ""].filter(Boolean).join("\n"),
+      customer_note: [form.notes, `Full Address: ${fullAddress}`, appliedCoupon ? `Coupon: ${appliedCoupon} (₹${couponDiscount} off)` : ""].filter(Boolean).join("\n"),
       meta_data: [
-        { key: "whatsapp_number", value: form.whatsapp },
         { key: "full_address", value: fullAddress },
         { key: "final_total", value: finalTotal.toString() },
         { key: "user_type", value: user ? "registered" : "guest" },
@@ -328,6 +339,17 @@ export default function Checkout(): React.ReactElement {
       trackPurchase(cartItems, finalTotal, String(wooOrder.id));
       clear();
       toast({ title: "Order Placed!", description: `Order #${wooOrder.id} confirmed.` });
+      // SMS notification (fire and forget)
+      if (form.phone) {
+        void fetch('/api/notify/sms', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phone: form.phone,
+            message: `KD Book Bazaar: Order #${wooOrder.id} placed! Total: Rs.${finalTotal}. We'll deliver soon. Track at kdbookbazaar.com/dashboard`,
+          }),
+        });
+      }
       setTimeout(() => router.push(user ? `/dashboard?order=${wooOrder.id}` : `/order-confirmation?wcOrderId=${wooOrder.id}&cod=true`), 1000);
     } catch (err) {
       toast({ title: "Order Failed", description: err instanceof Error ? err.message : "Please try again", variant: "destructive" });
@@ -341,6 +363,17 @@ export default function Checkout(): React.ReactElement {
       trackPurchase(cartItems, finalTotal, response.razorpay_payment_id);
       clear();
       toast({ title: "Payment Successful!", description: `Order #${wooOrder.id} confirmed.` });
+      // SMS notification (fire and forget)
+      if (form.phone) {
+        void fetch('/api/notify/sms', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phone: form.phone,
+            message: `KD Book Bazaar: Payment received! Order #${wooOrder.id} confirmed. Total: Rs.${finalTotal}. Track at kdbookbazaar.com/dashboard`,
+          }),
+        });
+      }
       setTimeout(() => router.push(user ? `/dashboard?order=${wooOrder.id}` : `/order-confirmation?orderId=${response.razorpay_payment_id}&wcOrderId=${wooOrder.id}`), 1000);
     } catch {
       toast({ title: "Payment Done", description: "We'll contact you soon." });
@@ -614,16 +647,6 @@ export default function Checkout(): React.ReactElement {
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Phone <span className="text-[#ff3131]">*</span></label>
                   <input name="phone" type="tel" value={form.phone} onChange={onChange} className={inputClass(errors.phone)} placeholder="10-digit number" required />
                   <FieldError msg={errors.phone} />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
-                    WhatsApp <span className="text-[#ff3131]">*</span>
-                    <button type="button" onClick={copyPhoneToWhatsApp} className="ml-2 text-[10px] bg-green-500 hover:bg-green-600 text-white px-2 py-0.5 rounded-full font-bold transition-colors normal-case tracking-normal">
-                      Same as phone
-                    </button>
-                  </label>
-                  <input name="whatsapp" type="tel" value={form.whatsapp} onChange={onChange} className={inputClass(errors.whatsapp)} placeholder="WhatsApp number" required />
-                  <FieldError msg={errors.whatsapp} />
                 </div>
               </div>
 

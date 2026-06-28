@@ -8,6 +8,16 @@ function wcAuth() {
   return 'Basic ' + Buffer.from(`${CONSUMER_KEY}:${CONSUMER_SECRET}`).toString('base64');
 }
 
+async function sendSMS(phone: string, message: string) {
+  try {
+    await fetch(`${process.env.NEXT_PUBLIC_WORDPRESS_URL ? '' : 'http://localhost:3000'}/api/notify/sms`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, message }),
+    });
+  } catch { /* SMS failure should not block cancel */ }
+}
+
 const CANCELABLE_STATUSES = ['pending', 'processing', 'on-hold'];
 
 export async function POST(req: NextRequest) {
@@ -40,7 +50,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Cancel the order
+    // Cancel the order (WooCommerce will automatically send cancellation email)
     const updateRes = await fetch(`${WC_BASE}/orders/${orderId}`, {
       method: 'PUT',
       headers: { Authorization: auth, 'Content-Type': 'application/json' },
@@ -56,6 +66,16 @@ export async function POST(req: NextRequest) {
     }
 
     const updated = await updateRes.json();
+
+    // Send SMS notification (fire and forget)
+    const phone = order.billing?.phone;
+    if (phone) {
+      void sendSMS(
+        phone,
+        `KD Book Bazaar: Order #${orderId} has been cancelled. For refund queries contact support@kdbookbazaar.com`
+      );
+    }
+
     return NextResponse.json({ success: true, status: updated.status });
   } catch (error) {
     console.error('[Orders] cancel error:', error);
