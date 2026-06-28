@@ -21,9 +21,6 @@ export default function ProductCard({ product }: { product: Product }) {
   const salePrice = Number(product.price);
   const originalPrice = Number(product.regular_price);
   const isOnSale = originalPrice > salePrice && originalPrice > 0;
-  const discountPercent = isOnSale
-    ? Math.round(((originalPrice - salePrice) / originalPrice) * 100)
-    : 0;
 
   return (
     <Link href={productUrl} className="group block">
@@ -37,16 +34,6 @@ export default function ProductCard({ product }: { product: Product }) {
             decoding="async"
             className="absolute inset-0 w-full h-full object-contain p-2 group-hover:scale-[1.03] transition-transform duration-500 ease-out"
           />
-          {isOnSale && (
-            <div className="absolute top-2 left-2 z-10 bg-[#ff3131] text-white text-[9px] font-bold px-2.5 py-1 rounded-full tracking-wide">
-              -{discountPercent}%
-            </div>
-          )}
-          {!isOnSale && product.badge === 'New' && (
-            <div className="absolute top-2 left-2 z-10 bg-gray-800 text-white text-[9px] font-bold px-2.5 py-1 rounded-full tracking-wide">
-              New
-            </div>
-          )}
         </div>
 
         {/* Info */}

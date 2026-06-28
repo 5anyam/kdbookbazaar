@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const res = await fetch(
-      `${WC_BASE}/products?search=${encodeURIComponent(q)}&per_page=7&status=publish&orderby=relevance`,
+      `${WC_BASE}/products?search=${encodeURIComponent(q)}&per_page=7&status=publish&orderby=popularity`,
       {
         headers: { Authorization: wcAuth() },
         next: { revalidate: 30 },
