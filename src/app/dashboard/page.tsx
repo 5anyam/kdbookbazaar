@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, useCallback, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "../../../lib/AuthContext";
 import {
   Package, Clock, CheckCircle, XCircle, Truck, LogOut,
@@ -77,12 +77,15 @@ function formatDate(d: string) {
 
 export default function Dashboard() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const newOrderId = Number(searchParams.get('order') || 0);
   const { user, loading: authLoading, logout } = useAuth();
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
   const [ordersError, setOrdersError] = useState('');
-  const [expandedOrder, setExpandedOrder] = useState<number | null>(null);
+  const [expandedOrder, setExpandedOrder] = useState<number | null>(newOrderId || null);
+  const newOrderRef = useRef<HTMLDivElement>(null);
 
   // Modal state
   const [modal, setModal] = useState<{ type: ModalType; orderId: number } | null>(null);
@@ -117,6 +120,15 @@ export default function Dashboard() {
   }, [user]);
 
   useEffect(() => { if (user) fetchOrders(); }, [user, fetchOrders]);
+
+  // Scroll to new order after orders load
+  useEffect(() => {
+    if (!ordersLoading && newOrderId && newOrderRef.current) {
+      setTimeout(() => {
+        newOrderRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+    }
+  }, [ordersLoading, newOrderId]);
 
   const openModal = (type: ModalType, orderId: number) => {
     setModal({ type, orderId });
@@ -309,9 +321,18 @@ export default function Dashboard() {
                 const canCancel = ['pending', 'processing', 'on-hold'].includes(order.status);
                 const canRefund = ['completed', 'processing'].includes(order.status);
                 const isExpanded = expandedOrder === order.id;
+                const isNew = order.id === newOrderId;
 
                 return (
-                  <div key={order.id} className="border border-gray-100 rounded-xl overflow-hidden hover:border-gray-200 transition-all">
+                  <div
+                    key={order.id}
+                    ref={isNew ? newOrderRef : undefined}
+                    className={`border rounded-xl overflow-hidden transition-all ${
+                      isNew
+                        ? 'border-[#ff3131] shadow-md shadow-red-100 ring-1 ring-[#ff3131]/30'
+                        : 'border-gray-100 hover:border-gray-200'
+                    }`}
+                  >
 
                     {/* Order Summary Row */}
                     <div
@@ -319,13 +340,18 @@ export default function Dashboard() {
                       onClick={() => setExpandedOrder(isExpanded ? null : order.id)}
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-9 h-9 bg-gray-50 rounded-lg flex items-center justify-center shrink-0">
-                          <Package className="w-4 h-4 text-gray-400" />
+                        <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${isNew ? 'bg-[#ff3131]/10' : 'bg-gray-50'}`}>
+                          <Package className={`w-4 h-4 ${isNew ? 'text-[#ff3131]' : 'text-gray-400'}`} />
                         </div>
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-sm font-bold text-gray-900">#{order.id}</span>
                             <StatusBadge status={order.status} />
+                            {isNew && (
+                              <span className="text-[10px] font-bold text-[#ff3131] bg-[#ff3131]/10 px-2 py-0.5 rounded-full">
+                                New Order
+                              </span>
+                            )}
                           </div>
                           <p className="text-xs text-gray-400 mt-0.5">{formatDate(order.date_created)}</p>
                         </div>
