@@ -7,8 +7,9 @@ import { useIsMobile } from "../hooks/use-mobile";
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { FiSearch } from "react-icons/fi";
 import { HiOutlineMenuAlt3, HiOutlineX } from "react-icons/hi";
-import { Mail, UserCircle2, Loader2 } from "lucide-react";
+import { Mail, UserCircle2, Loader2, LayoutDashboard, LogOut } from "lucide-react";
 import AnnouncementBar from './anouncement';
+import { useAuth } from "../lib/AuthContext";
 
 const QUICK_SEARCH_CHIPS = ['Fiction', 'Non-Fiction', "Children's", 'Self-Help', 'Academic'];
 
@@ -120,11 +121,11 @@ export default function Header() {
   const router = useRouter();
   const isMobile = useIsMobile();
 
+  const { user, logout } = useAuth();
+
   const [search, setSearch] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userEmail, setUserEmail] = useState("");
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [announcementVisible, setAnnouncementVisible] = useState(() => {
     if (typeof window === 'undefined') return true;
@@ -141,13 +142,6 @@ export default function Header() {
   const userMenuRef = useRef<HTMLDivElement>(null);
   const desktopSearchRef = useRef<HTMLDivElement>(null);
   const mobileSearchInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const auth = localStorage.getItem("isAuthenticated");
-    const email = localStorage.getItem("userEmail");
-    setIsAuthenticated(auth === "true");
-    setUserEmail(email || "");
-  }, [location]);
 
   // Close dropdowns on route change
   useEffect(() => {
@@ -223,9 +217,8 @@ export default function Header() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("userEmail");
-    setIsAuthenticated(false);
+    logout();
+    setShowUserMenu(false);
     router.push("/");
   };
 
@@ -313,12 +306,15 @@ export default function Header() {
               {/* Auth — desktop */}
               {!isMobile && (
                 <div className="relative" ref={userMenuRef}>
-                  {isAuthenticated ? (
+                  {user ? (
                     <button
                       onClick={() => setShowUserMenu(!showUserMenu)}
-                      className="p-2 text-gray-600 hover:text-[#ff3131] transition-colors"
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors group"
                     >
-                      <UserCircle2 className="w-5 h-5 stroke-[1.5]" />
+                      <UserCircle2 className="w-5 h-5 text-[#ff3131] stroke-[1.5] flex-shrink-0" />
+                      <span className="text-xs font-semibold text-gray-700 group-hover:text-[#ff3131] transition-colors max-w-[90px] truncate">
+                        {user.first_name || user.username}
+                      </span>
                     </button>
                   ) : (
                     <Link
@@ -328,21 +324,26 @@ export default function Header() {
                       Sign In
                     </Link>
                   )}
-                  {showUserMenu && (
-                    <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-gray-200 shadow-xl py-2 z-50">
-                      {userEmail && (
-                        <div className="px-5 py-2 border-b border-gray-100 mb-1 bg-gray-50">
-                          <p className="text-[10px] text-gray-400 uppercase tracking-wider">Signed in as</p>
-                          <p className="text-xs font-medium text-gray-800 truncate">{userEmail}</p>
-                        </div>
-                      )}
-                      <Link href="/account" className="block px-5 py-2 text-xs text-gray-700 hover:bg-gray-50">
-                        My Account
+                  {showUserMenu && user && (
+                    <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-gray-200 shadow-xl py-2 z-50 rounded-xl overflow-hidden">
+                      <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
+                        <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-0.5">Signed in as</p>
+                        <p className="text-xs font-bold text-gray-900 truncate">{user.first_name ? `${user.first_name} ${user.last_name}`.trim() : user.username}</p>
+                        <p className="text-[10px] text-gray-400 truncate">{user.email}</p>
+                      </div>
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setShowUserMenu(false)}
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-xs text-gray-700 hover:bg-gray-50 transition-colors"
+                      >
+                        <LayoutDashboard className="w-3.5 h-3.5 text-[#ff3131]" />
+                        My Orders
                       </Link>
                       <button
                         onClick={handleLogout}
-                        className="w-full text-left px-5 py-2 text-xs text-red-600 hover:bg-red-50 border-t border-gray-100 mt-1"
+                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs text-red-600 hover:bg-red-50 transition-colors border-t border-gray-100"
                       >
+                        <LogOut className="w-3.5 h-3.5" />
                         Logout
                       </button>
                     </div>
@@ -383,18 +384,43 @@ export default function Header() {
                   {item.name}
                 </Link>
               ))}
-              <div className="mt-8 space-y-4 border-t border-gray-100 pt-6">
-                <Link
-                  href="/account"
-                  className="flex items-center gap-3 text-xs tracking-widest text-gray-600 uppercase"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <UserCircle2 className="w-5 h-5 stroke-[1.5] text-[#ff3131]" />
-                  My Account
-                </Link>
+              <div className="mt-8 space-y-1 border-t border-gray-100 pt-6">
+                {user ? (
+                  <>
+                    <div className="px-1 pb-3 mb-2 border-b border-gray-100">
+                      <p className="text-[10px] text-gray-400 uppercase tracking-wider">Signed in as</p>
+                      <p className="text-sm font-bold text-gray-900 mt-0.5">{user.first_name || user.username}</p>
+                      <p className="text-xs text-gray-400">{user.email}</p>
+                    </div>
+                    <Link
+                      href="/dashboard"
+                      className="flex items-center gap-3 py-3 text-sm font-medium text-gray-700"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <LayoutDashboard className="w-5 h-5 text-[#ff3131]" />
+                      My Orders
+                    </Link>
+                    <button
+                      onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
+                      className="flex items-center gap-3 py-3 text-sm font-medium text-red-600 w-full"
+                    >
+                      <LogOut className="w-5 h-5" />
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="flex items-center gap-3 text-xs tracking-widest text-gray-600 uppercase py-3"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <UserCircle2 className="w-5 h-5 stroke-[1.5] text-[#ff3131]" />
+                    Sign In / Register
+                  </Link>
+                )}
                 <a
                   href="mailto:support@kdbookbazaar.com"
-                  className="flex items-center gap-3 text-xs tracking-widest text-gray-600 uppercase"
+                  className="flex items-center gap-3 text-xs tracking-widest text-gray-600 uppercase py-3 border-t border-gray-100 mt-1"
                 >
                   <Mail className="w-5 h-5 stroke-[1.5] text-[#ff3131]" />
                   Help Center

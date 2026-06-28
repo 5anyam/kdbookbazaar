@@ -328,7 +328,7 @@ export default function Checkout(): React.ReactElement {
       trackPurchase(cartItems, finalTotal, String(wooOrder.id));
       clear();
       toast({ title: "Order Placed!", description: `Order #${wooOrder.id} confirmed.` });
-      setTimeout(() => router.push(user ? `/dashboard/orders/${wooOrder.id}` : `/order-confirmation?wcOrderId=${wooOrder.id}&cod=true`), 1000);
+      setTimeout(() => router.push(user ? `/dashboard?order=${wooOrder.id}` : `/order-confirmation?wcOrderId=${wooOrder.id}&cod=true`), 1000);
     } catch (err) {
       toast({ title: "Order Failed", description: err instanceof Error ? err.message : "Please try again", variant: "destructive" });
     } finally { setLoading(false); setStep("form"); }
@@ -341,7 +341,7 @@ export default function Checkout(): React.ReactElement {
       trackPurchase(cartItems, finalTotal, response.razorpay_payment_id);
       clear();
       toast({ title: "Payment Successful!", description: `Order #${wooOrder.id} confirmed.` });
-      setTimeout(() => router.push(user ? `/dashboard/orders/${wooOrder.id}` : `/order-confirmation?orderId=${response.razorpay_payment_id}&wcOrderId=${wooOrder.id}`), 1000);
+      setTimeout(() => router.push(user ? `/dashboard?order=${wooOrder.id}` : `/order-confirmation?orderId=${response.razorpay_payment_id}&wcOrderId=${wooOrder.id}`), 1000);
     } catch {
       toast({ title: "Payment Done", description: "We'll contact you soon." });
       setTimeout(() => router.push(`/order-confirmation?orderId=${response.razorpay_payment_id}&wcOrderId=${wooOrder.id}`), 2000);
