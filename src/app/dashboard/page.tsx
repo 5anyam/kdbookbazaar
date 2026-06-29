@@ -539,6 +539,9 @@ export default function Dashboard() {
 
                     {isExpanded && (
                       <div className="border-t border-gray-100 p-4 bg-gray-50/50 space-y-4">
+                        {/* Shipping tracker */}
+                        <ShippingTracker status={order.status} />
+
                         <div>
                           <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-2">Items Ordered</p>
                           <div className="space-y-1.5">
@@ -686,6 +689,78 @@ function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string;
       <div className="min-w-0">
         <p className="text-[11px] text-gray-400 uppercase tracking-wide">{label}</p>
         <p className="text-sm font-semibold text-gray-800 truncate">{value}</p>
+      </div>
+    </div>
+  );
+}
+
+const SHIPPING_STEPS = [
+  { label: 'Order Placed',  sub: 'We received your order'       },
+  { label: 'Approved',      sub: 'Order confirmed & packed'     },
+  { label: 'On the Way',    sub: 'Out for delivery'             },
+  { label: 'Delivered',     sub: 'Delivered to your address'    },
+];
+
+function getShippingStep(status: string): number {
+  if (['cancelled', 'failed', 'refunded'].includes(status)) return -1;
+  if (status === 'pending') return 0;
+  if (status === 'processing' || status === 'on-hold') return 1;
+  if (status === 'completed') return 3;
+  return 0;
+}
+
+function ShippingTracker({ status }: { status: string }) {
+  const isCancelled = ['cancelled', 'failed', 'refunded'].includes(status);
+  const activeStep = getShippingStep(status);
+
+  if (isCancelled) {
+    return (
+      <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-xl text-sm text-red-600">
+        <XCircle className="w-4 h-4 shrink-0" />
+        <span className="font-medium capitalize">{status.replace(/-/g, ' ')} — this order is no longer active.</span>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wide mb-3">Shipping Status</p>
+      <div className="relative flex items-start gap-0">
+        {SHIPPING_STEPS.map((step, i) => {
+          const done = i <= activeStep;
+          const current = i === activeStep;
+          const isLast = i === SHIPPING_STEPS.length - 1;
+          return (
+            <div key={i} className="flex-1 flex flex-col items-center relative">
+              {/* Connector line */}
+              {!isLast && (
+                <div className="absolute top-3.5 left-1/2 w-full h-0.5 z-0"
+                  style={{ background: i < activeStep ? '#ff3131' : '#e5e7eb' }}
+                />
+              )}
+              {/* Step dot */}
+              <div
+                className={`relative z-10 w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all ${
+                  done
+                    ? 'bg-[#ff3131] border-[#ff3131]'
+                    : 'bg-white border-gray-200'
+                } ${current ? 'ring-4 ring-[#ff3131]/20' : ''}`}
+              >
+                {done
+                  ? <CheckCircle className="w-3.5 h-3.5 text-white" />
+                  : <span className="w-2 h-2 rounded-full bg-gray-300" />
+                }
+              </div>
+              {/* Label */}
+              <div className="mt-2 text-center px-1">
+                <p className={`text-[10px] font-bold leading-snug ${done ? 'text-[#ff3131]' : 'text-gray-400'}`}>
+                  {step.label}
+                </p>
+                <p className="text-[9px] text-gray-400 leading-snug mt-0.5 hidden sm:block">{step.sub}</p>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

@@ -2,11 +2,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchProducts, fetchProductCategories } from "../../lib/woocommerceApi";
 import ProductCard from "../../components/ProductCard";
+import BannerSlider from "../../components/HeroCarousel";
 import Link from "next/link";
 import { ChevronRight } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
-import { FiSearch } from 'react-icons/fi';
-import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 interface Product {
   id: number;
@@ -112,8 +111,6 @@ function BookRow({
 }
 
 export default function Homepage() {
-  const router = useRouter();
-  const [heroSearch, setHeroSearch] = useState("");
   const [isVisible, setIsVisible] = useState(false);
   const statsRef = useRef<HTMLDivElement>(null);
 
@@ -125,13 +122,6 @@ export default function Homepage() {
     if (statsRef.current) observer.observe(statsRef.current);
     return () => observer.disconnect();
   }, []);
-
-  function handleHeroSearch(e: React.FormEvent) {
-    e.preventDefault();
-    const q = heroSearch.trim();
-    if (!q) return;
-    router.push(`/search?q=${encodeURIComponent(q)}`);
-  }
 
   const { data: products, isLoading: productsLoading, isError } = useQuery<Product[]>({
     queryKey: ["homepage-products"],
@@ -178,66 +168,10 @@ export default function Homepage() {
   return (
     <div className="min-h-screen bg-white font-sans text-gray-900">
 
-      {/* ── HERO ── */}
-      <section className="bg-white py-12 md:py-20 px-4 border-b border-gray-100">
-        <div className="max-w-2xl mx-auto text-center">
-          <p className="text-[#ff3131] font-semibold text-sm mb-3 tracking-wide">
-            India&apos;s Favourite Book Store
-          </p>
-          <h1 className="text-3xl md:text-5xl font-black text-gray-900 mb-3 leading-tight tracking-tight">
-            Your next favourite book<br className="hidden md:block" /> is waiting for you
-          </h1>
-          <p className="text-gray-400 text-sm md:text-base mb-8 max-w-md mx-auto leading-relaxed">
-            Thousands of books across every genre at the best prices — delivered fast.
-          </p>
-
-          {/* Search bar */}
-          <form
-            onSubmit={handleHeroSearch}
-            className="flex items-center bg-white border-2 border-gray-200 focus-within:border-[#ff3131] rounded-2xl overflow-hidden max-w-lg mx-auto mb-7 transition-colors shadow-sm"
-          >
-            <FiSearch className="ml-4 text-gray-400 w-5 h-5 flex-shrink-0" />
-            <input
-              type="text"
-              placeholder="Search by title, author or genre..."
-              className="flex-1 bg-transparent py-3.5 px-3 text-sm text-gray-800 focus:outline-none placeholder-gray-400"
-              value={heroSearch}
-              onChange={(e) => setHeroSearch(e.target.value)}
-            />
-            <button
-              type="submit"
-              className="px-5 py-3.5 bg-[#ff3131] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#cc0000] transition-colors flex-shrink-0 rounded-r-xl"
-            >
-              Search
-            </button>
-          </form>
-
-          {/* Category pills */}
-          {catsLoading ? (
-            <div className="flex flex-wrap justify-center gap-2">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="h-9 w-24 bg-gray-100 rounded-full animate-pulse" />
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-wrap justify-center gap-2">
-              {categories.slice(0, 8).map((cat) => (
-                <Link
-                  key={cat.slug}
-                  href={`/category/${cat.slug}`}
-                  className="px-4 py-2 bg-gray-100 hover:bg-red-50 hover:text-[#ff3131] rounded-full text-sm font-medium text-gray-600 transition-colors whitespace-nowrap"
-                >
-                  {cat.name}
-                </Link>
-              ))}
-              <Link
-                href="/collections"
-                className="px-4 py-2 bg-[#ff3131] text-white rounded-full text-sm font-semibold hover:bg-[#cc0000] transition-colors whitespace-nowrap flex items-center gap-1"
-              >
-                All Books <ChevronRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          )}
+      {/* ── HERO CAROUSEL ── */}
+      <section className="bg-white px-4 py-4 md:py-6 border-b border-gray-100">
+        <div className="max-w-7xl mx-auto">
+          <BannerSlider />
         </div>
       </section>
 

@@ -9,12 +9,12 @@ import { ThemeProvider } from '../../components/ThemeProvider';
 import Loader from '../../components/Loader';
 
 export const metadata = {
-  title: 'KD Book Bazaar - Shop Everything You Love | Best Deals Online India',
-  description: 'KD Book Bazaar is your one-stop online shopping destination in India. Shop electronics, fashion, home essentials, beauty, sports, toys & more at the best prices. 100% authentic products with fast delivery.',
-  keywords: 'online shopping india, buy electronics online, fashion online india, home essentials, beauty products, sports equipment, kdbookbazaar, best deals india, authentic products, fast delivery, kdbookbazaar.com',
+  title: "KD Book Bazaar - India's Favourite Online Book Store | Buy Books Online",
+  description: 'KD Book Bazaar is India\'s trusted online book store. Buy fiction, academic, self-help, children\'s books, manga, comics & more at the best prices. Fast delivery across India with easy returns.',
+  keywords: 'buy books online india, online book store india, fiction books, academic books, self-help books, children books, manga india, comics india, kdbookbazaar, cheap books india, best book prices, book delivery india, kdbookbazaar.com',
   openGraph: {
-    title: 'KD Book Bazaar - Shop Everything You Love',
-    description: 'Your trusted online shopping destination. Best prices on electronics, fashion, home essentials & more with 100% authentic products.',
+    title: "KD Book Bazaar - India's Favourite Online Book Store",
+    description: 'Buy books online at the best prices in India. Fiction, academic, self-help, children\'s books, manga & more — fast delivery, easy returns.',
     url: 'https://kdbookbazaar.com',
     siteName: 'KD Book Bazaar',
     images: [
@@ -22,7 +22,7 @@ export const metadata = {
         url: '/logo.jpg',
         width: 1200,
         height: 630,
-        alt: 'KD Book Bazaar - Shop Everything You Love',
+        alt: "KD Book Bazaar - India's Favourite Online Book Store",
       },
     ],
     locale: 'en_IN',
@@ -30,8 +30,8 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'KD Book Bazaar - Shop Everything You Love',
-    description: 'Your trusted online shopping destination in India. Best prices, fast delivery, easy returns.',
+    title: "KD Book Bazaar - India's Favourite Online Book Store",
+    description: 'Buy books online at the best prices in India. Fast delivery, easy returns.',
     images: ['/logo.jpg'],
     creator: '@kdbookbazaar',
   },
@@ -42,14 +42,11 @@ export const metadata = {
       index: true,
     },
   },
-  verification: {
-    google: 'your-google-verification-code',
-  },
   alternates: {
     canonical: 'https://kdbookbazaar.com',
   },
-  category: 'ecommerce',
-  classification: 'Online Shopping & Retail',
+  category: 'books',
+  classification: 'Online Book Store',
   authors: [{ name: 'KD Book Bazaar' }],
   creator: 'KD Book Bazaar',
   publisher: 'KD Book Bazaar',
@@ -95,9 +92,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "Organization",
+              "@type": "BookStore",
               "name": "KD Book Bazaar",
-              "description": "India's trusted online shopping destination offering electronics, fashion, home essentials, beauty, sports and more at best prices.",
+              "description": "India's favourite online book store — fiction, academic, self-help, children's books, manga, comics & more at the best prices with fast delivery.",
               "url": "https://kdbookbazaar.com",
               "logo": "https://kdbookbazaar.com/logo.jpg",
               "foundingDate": "2024",
@@ -111,6 +108,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               "contactPoint": {
                 "@type": "ContactPoint",
                 "contactType": "customer service",
+                "telephone": "+91-99116-36888",
                 "email": "support@kdbookbazaar.com",
                 "availableLanguage": ["English", "Hindi"]
               },
@@ -123,12 +121,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 "@type": "Brand",
                 "name": "KD Book Bazaar",
                 "logo": "https://kdbookbazaar.com/logo.jpg",
-                "slogan": "Shop Everything You Love"
+                "slogan": "India's Favourite Book Store"
               },
               "aggregateRating": {
                 "@type": "AggregateRating",
-                "ratingValue": "4.8",
-                "reviewCount": "1200",
+                "ratingValue": "4.9",
+                "reviewCount": "50000",
                 "bestRating": "5",
                 "worstRating": "1"
               }
@@ -164,16 +162,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "ItemList",
-              "name": "KD Book Bazaar Product Categories",
+              "name": "KD Book Bazaar Book Categories",
               "itemListElement": [
-                { "@type": "ListItem", "position": 1, "name": "Electronics", "url": "https://kdbookbazaar.com/category/mobile-electronics-accessories" },
-                { "@type": "ListItem", "position": 2, "name": "Fashion", "url": "https://kdbookbazaar.com/category/fashion" },
-                { "@type": "ListItem", "position": 3, "name": "Home & Kitchen", "url": "https://kdbookbazaar.com/category/home-kitchen" },
-                { "@type": "ListItem", "position": 4, "name": "Home Decor", "url": "https://kdbookbazaar.com/category/home-decor" },
-                { "@type": "ListItem", "position": 5, "name": "Sports & Outdoors", "url": "https://kdbookbazaar.com/category/sports-outdoors" },
-                { "@type": "ListItem", "position": 6, "name": "Toys & Games", "url": "https://kdbookbazaar.com/category/toys-games" },
-                { "@type": "ListItem", "position": 7, "name": "Bike & Car", "url": "https://kdbookbazaar.com/category/bike-car-accessories" },
-                { "@type": "ListItem", "position": 8, "name": "Office Products", "url": "https://kdbookbazaar.com/category/office-products" }
+                { "@type": "ListItem", "position": 1, "name": "Manga & Comics", "url": "https://kdbookbazaar.com/category/manga-comics" },
+                { "@type": "ListItem", "position": 2, "name": "Fiction", "url": "https://kdbookbazaar.com/category/fiction" },
+                { "@type": "ListItem", "position": 3, "name": "Academic Books", "url": "https://kdbookbazaar.com/category/academic" },
+                { "@type": "ListItem", "position": 4, "name": "Self Help", "url": "https://kdbookbazaar.com/category/self-help" },
+                { "@type": "ListItem", "position": 5, "name": "Children's Books", "url": "https://kdbookbazaar.com/category/childrens-books" },
+                { "@type": "ListItem", "position": 6, "name": "Biographies", "url": "https://kdbookbazaar.com/category/biographies" },
+                { "@type": "ListItem", "position": 7, "name": "History & Politics", "url": "https://kdbookbazaar.com/category/history-politics" },
+                { "@type": "ListItem", "position": 8, "name": "Science & Technology", "url": "https://kdbookbazaar.com/category/science-technology" }
               ]
             })
           }}
