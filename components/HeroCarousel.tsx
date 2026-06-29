@@ -18,21 +18,21 @@ const BannerSlider: React.FC = () => {
 
   const banners: Banner[] = [
     {
-      image: "/banner-1.jpg",
+      image: "https://cms.kdbookbazaar.com/wp-content/uploads/2026/06/kd-banner-1-scaled.png",
       title: "India's Favourite Book Store",
       description: "Thousands of titles across fiction, academic, self-help & more",
       link: "/collections",
       buttonText: "Browse Books"
     },
     {
-      image: "/banner-2.jpg",
-      title: "Sale — Up to 70% Off",
+      image: "https://cms.kdbookbazaar.com/wp-content/uploads/2026/06/kd-banner-2-scaled.png",
+      title: "Sale - Up to 70% Off",
       description: "Bestsellers, textbooks and children's books at unbeatable prices",
-      link: "/sale",
+      link: "/collections",
       buttonText: "Shop Sale"
     },
     {
-      image: "/banner-3.jpg",
+      image: "https://cms.kdbookbazaar.com/wp-content/uploads/2026/06/kd-banner-3-scaled.png",
       title: "New Arrivals Every Week",
       description: "Fresh titles added weekly across all genres",
       link: "/collections",
