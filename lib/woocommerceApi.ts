@@ -380,6 +380,18 @@ export async function fetchProducts(
   return list;
 }
 
+export async function fetchAllProducts(): Promise<Product[]> {
+  const all: Product[] = [];
+  let page = 1;
+  while (true) {
+    const batch = await fetchProducts(page, 100);
+    all.push(...batch);
+    if (batch.length < 100) break;
+    page++;
+  }
+  return all;
+}
+
 export async function fetchSignatureProducts(page = 1, perPage = 12): Promise<Product[]> {
   const comboId = await resolveFirstComboCategoryId().catch(() => null);
   const list = await fetchProducts(page, perPage, undefined, {

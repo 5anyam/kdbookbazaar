@@ -1,6 +1,6 @@
 'use client';
 import { useQuery } from "@tanstack/react-query";
-import { fetchProducts, fetchProductCategories } from "../../lib/woocommerceApi";
+import { fetchAllProducts, fetchProductCategories } from "../../lib/woocommerceApi";
 import ProductCard from "../../components/ProductCard";
 import BannerSlider from "../../components/HeroCarousel";
 import Link from "next/link";
@@ -125,7 +125,7 @@ export default function Homepage() {
 
   const { data: products, isLoading: productsLoading, isError } = useQuery<Product[]>({
     queryKey: ["homepage-products"],
-    queryFn: async () => (await fetchProducts() || []) as Product[],
+    queryFn: async () => (await fetchAllProducts() || []) as Product[],
     staleTime: 10 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
     refetchOnWindowFocus: false,
