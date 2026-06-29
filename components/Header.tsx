@@ -8,7 +8,6 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { FiSearch } from "react-icons/fi";
 import { HiOutlineMenuAlt3, HiOutlineX } from "react-icons/hi";
 import { Mail, UserCircle2, Loader2, LayoutDashboard, LogOut } from "lucide-react";
-import AnnouncementBar from './anouncement';
 import { useAuth } from "../lib/AuthContext";
 
 const QUICK_SEARCH_CHIPS = ['Fiction', 'Non-Fiction', "Children's", 'Self-Help', 'Academic'];
@@ -127,11 +126,6 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [announcementVisible, setAnnouncementVisible] = useState(() => {
-    if (typeof window === 'undefined') return true;
-    return localStorage.getItem('announcementBarClosed') !== 'true';
-  });
-
   // Search suggestions
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
@@ -222,14 +216,9 @@ export default function Header() {
     router.push("/");
   };
 
-  const headerTop = announcementVisible ? 'top-10 lg:top-11' : 'top-0';
-
   return (
     <>
-      <AnnouncementBar onClose={() => setAnnouncementVisible(false)} />
-      {announcementVisible && <div className="h-10 lg:h-11" />}
-
-      <header className={`sticky ${headerTop} z-40 bg-white border-b border-gray-200 font-sans`}>
+      <header className="sticky top-0 z-40 bg-white border-b border-gray-200 font-sans">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center gap-3 md:gap-5 h-16 md:h-[72px]">
 
